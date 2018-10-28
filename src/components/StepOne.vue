@@ -28,8 +28,9 @@
     },
     methods: {
       selected: function(){
+        // Save to store 
+        
         this.$emit('can-continue', {value: true});
-        console.log('test', this.clickedNext)
       },
     },
     activated() {

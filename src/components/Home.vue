@@ -16,7 +16,8 @@
 </template>
 
 <script>
-  import HorizontalStepper from 'vue-stepper';
+import HorizontalStepper from 'vue-stepper';
+import store from "../store"
 
 // This components will have the content for each stepper step.
 import StepOne from './StepOne.vue';
@@ -72,6 +73,9 @@ export default {
       var res = JSON.stringify(payload)
       alert(res)
     }
+  },
+  mounted() {
+    store.dispatch('lookupApps')
   }
 }
 </script>
