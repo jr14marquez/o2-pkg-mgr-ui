@@ -18,6 +18,8 @@
 </template>
 
 <script>
+import store from "../store"
+
   export default {
     props: ['clickedNext', 'currentStep'],
     data () {
@@ -27,9 +29,10 @@
       }
     },
     methods: {
-      selected: function(){
+      selected: function(val){
         // Save to store 
-        
+        store.dispatch('addApp',val)
+        console.log('selected is :', val)
         this.$emit('can-continue', {value: true});
       },
     },

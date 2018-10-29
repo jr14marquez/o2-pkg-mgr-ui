@@ -14,11 +14,12 @@ export default new Vuex.Store({
       { artifactId: 'tlv-app', groupId: 'io/ossim/omar/apps' },
       { artifactId: 'omar-cmdln-app', groupId: 'omar/cmdln/app' }
     ],
+    selectedApps: [],
     ltsApps: []
   },
   mutations: {
-  	addApp (state, app) {
-      state.apps.push(app)
+  	ADD_APP (state, apps) {
+      state.selectedApps = apps
     },
     deleteApp (state, app) {
       // Todo: Delete app from list
@@ -28,6 +29,9 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    addApp( { commit, state }, apps) {
+      commit('ADD_APP',apps)
+    },
     lookupApps ({ commit, state }) {
       //const response = await AppLookup.getApp({ word: this.word })
       var apps = state.apps
@@ -66,5 +70,8 @@ export default new Vuex.Store({
     }
   },
   getters: {
+    getSelectedApps (state) {
+      return state.selectedApps
+    },
   }
 })

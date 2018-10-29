@@ -70,12 +70,13 @@ export default {
     },
     // Executed when @stepper-finished event is triggered
     alert(payload) {
-      var res = JSON.stringify(payload)
-      alert(res)
+      var selectedApps = this.$store.getters.getSelectedApps
+      console.log('apps: ',selectedApps)
+      alert(selectedApps)
     }
   },
   mounted() {
-    store.dispatch('lookupApps')
+    //store.dispatch('lookupApps')
   }
 }
 </script>
