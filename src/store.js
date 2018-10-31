@@ -1,7 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import AppLookup from './services/AppLookup'
-const Convert = require('xml-js');
 
 Vue.use(Vuex)
 
@@ -10,7 +8,12 @@ export default new Vuex.Store({
   	apps: ['omar-ui-app','omar-services-app','omar-disk-cleanup-app','tlv-app', 'omar-cmdln-app'],
     libraries: ['ossim','elevation'],
     selectedApps: [],
-    selectedLibraries: []
+    selectedLibraries: [],
+    accountInfo: {
+      user: 'omar',
+      group: 'project-omar',
+      home: '/usr/share/omar',
+    }
   },
   mutations: {
   	ADD_APP (state, apps) {
@@ -18,6 +21,9 @@ export default new Vuex.Store({
     },
     ADD_LIBRARY (state, library) {
       state.selectedLibraries = library
+    },
+    ADD_ACCOUNT_INFO (state, info) {
+      state.accountInfo = info
     }
   },
   actions: {
@@ -26,6 +32,9 @@ export default new Vuex.Store({
     },
     addLibrary( { commit, state }, library) {
       commit('ADD_LIBRARY',library)
+    },
+    addAccountInfo( { commit, state }, info) {
+      commit('ADD_ACCOUNT_INFO',info)
     }
   },
   getters: {
@@ -40,6 +49,9 @@ export default new Vuex.Store({
     },
     getSelectedLibraries (state) {
       return state.selectedLibraries
+    },
+    getAccountInfo (state) {
+      return state.accountInfo
     },
   }
 })

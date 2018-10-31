@@ -38,7 +38,7 @@ import store from "../store"
       if(this.selectedApps.length >= 1) {
         this.$emit('can-continue', {value: true});
       }     
-    },
+    }
   }
 </script>
 

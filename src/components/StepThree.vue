@@ -5,9 +5,8 @@
 
         <form>
           <v-text-field
-            v-validate="'required|max:10|min:3'"
-            v-model="user"
-            :counter="10"
+            v-validate="'required|min:3'"
+            v-model="accountInfo.user"
             :error-messages="errors.collect('user')"
             clearable
             label="User"
@@ -16,8 +15,8 @@
             required
           ></v-text-field>
           <v-text-field
-            v-validate="'required|max:10|min:3'"
-            v-model="group"
+            v-validate="'required|min:3'"
+            v-model="accountInfo.group"
             :error-messages="errors.collect('group')"
             label="Group"
             clearable
@@ -27,7 +26,7 @@
           ></v-text-field>
           <v-text-field
             v-validate="'required|min:3'"
-            v-model="home"
+            v-model="accountInfo.home"
             clearable
             :error-messages="errors.collect('home')"
             label="Home/Install Directory"
@@ -47,22 +46,11 @@
 
 <script>
 import store from "../store"
-// import { Validator } from 'vee-validate';
+
   export default {
     data () {
       return {
-        user: 'omar',
-        group: 'project-omar',
-        home: '/usr/share/omar',
-        dictionary: {
-          custom: {
-            name: {
-              required: () => 'Name can not be empty',
-              max: 'The name field may not be greater than 10 characters'
-              // custom messages
-            },
-          }
-        }
+        accountInfo: this.$store.getters.getAccountInfo,
       }
     },
     mounted () {
@@ -76,22 +64,26 @@ import store from "../store"
       },
       submit () {
         this.$validator.validateAll().then(result => {
-          console.log('res: ', result)
+          // Save to store if result is true
+          console.log('result from submit: ', result)
+          if(result) {
+            store.dispatch('addAccountInfo',this.accountInfo)
+          }
         })
-        .catch(err => {
-          console.log('an err: ',err)
-        })
+        .catch(err => console.error('an error occurred validating: ',err))
 
       },
       clear () {
-        this.user = ''
-        this.group = ''
-        this.home = ''
+        this.accountInfo = {
+          user: '',
+          home: '',
+          group: ''
+        }
         this.$validator.reset()
       }
     },
     activated() {
-        this.$emit('can-continue', {value: true});   
+      this.$emit('can-continue', {value: true});   
     }
   }
 </script>

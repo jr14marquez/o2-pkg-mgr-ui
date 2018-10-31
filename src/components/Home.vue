@@ -4,8 +4,10 @@
           <div class="container">
               <div class="columns">
                   <div class="column is-8 is-offset-2">
-                      <horizontal-stepper :steps="demoSteps" @completed-step="completeStep"
-                                          @active-step="isStepActive" @stepper-finished="alert"
+                      <horizontal-stepper 
+                        :steps="demoSteps" @completed-step="completeStep"
+                        @active-step="isStepActive" @stepper-finished="alert"
+                        :top-buttons="true"
                       >                   
                       </horizontal-stepper>
                   </div>
@@ -20,9 +22,11 @@ import HorizontalStepper from 'vue-stepper';
 import store from "../store"
 
 // This components will have the content for each stepper step.
-import StepOne from './StepOne.vue';
-import StepTwo from './StepTwo.vue';
-import StepThree from './StepThree.vue';
+import StepOne from './StepOne.vue'
+import StepTwo from './StepTwo.vue'
+import StepThree from './StepThree.vue'
+import StepFour from './StepFour.vue'
+import StepFive from './StepFive.vue'
 
 export default {
   components: {
@@ -48,11 +52,27 @@ export default {
           completed: false,
         },
         {
-          icon: 'library_add',
+          icon: 'account_circle',
           name: 'third',
           title: 'Account Info',
-          subtitle: 'Add user and group info',
+          subtitle: 'Add user, group, and install/home info',
           component: StepThree,
+          completed: false,
+        },
+        {
+          icon: 'description',
+          name: 'fourth',
+          title: 'Review',
+          subtitle: 'Review installation',
+          component: StepFour,
+          completed: false,
+        },
+        {
+          icon: 'description',
+          name: 'fifth',
+          title: 'Review',
+          subtitle: 'Review installation',
+          component: StepFive,
           completed: false,
         }
       ],
@@ -81,8 +101,9 @@ export default {
     alert(payload) {
       var selectedApps = this.$store.getters.getSelectedApps
       var selectedLibraries = this.$store.getters.getSelectedLibraries
-      console.log('apps: ',selectedApps)
-      alert(selectedApps + ' ----' + selectedLibraries)
+      var accountInfo = this.$store.getters.getAccountInfo
+      console.log(selectedApps + ' ----' + selectedLibraries + '----------' + accountInfo)
+      alert(selectedApps + ' ----' + selectedLibraries + '----------' + accountInfo)
     }
   },
   mounted() {

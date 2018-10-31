@@ -27,16 +27,14 @@ import store from "../store"
       }
     },
     methods: {
-      selected: function(val){
+      selected (val) {
         // Save to store 
         store.dispatch('addLibrary',val)
         this.$emit('can-continue', {value: true});
       }
     },
     activated() {
-      if(this.selectedLibraries.length >= 1) {
-        this.$emit('can-continue', {value: true});
-      }     
+      this.$emit('can-continue', {value: true});  
     }
   }
 </script>
