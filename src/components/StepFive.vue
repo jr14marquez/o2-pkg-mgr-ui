@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-layout align-center justify-center row fill-height>
 
-      <v-card>
+      <v-card style="width:100%; min-width:800px;">
     <v-card-title class="indigo white--text headline">
       User Directory
     </v-card-title>
@@ -14,7 +14,9 @@
         <v-treeview
           :active.sync="active"
           :items="items"
-          :open.sync="open"
+          :load-children="fetchUsers"
+          
+          open-all
           activatable
           active-class="primary--text"
           class="grey lighten-5"
@@ -34,6 +36,7 @@
         text-xs-center
       >
         <v-scroll-y-transition mode="out-in">
+
           <div
             v-if="!selected"
             class="title grey--text text--lighten-1 font-weight-light"
@@ -48,16 +51,8 @@
             flat
             max-width="400"
           >
+           <div>{{ selected }}</div>
             <v-card-text>
-              <v-avatar
-                v-if="avatar"
-                size="88"
-              >
-                <v-img
-                  :src="`https://avataaars.io/${avatar}`"
-                  class="mb-4"
-                ></v-img>
-              </v-avatar>
               <h3 class="headline mb-2">
                 {{ selected.name }}
               </h3>
@@ -92,92 +87,136 @@
 <script>
 import store from "../store"
 
+const avatars = [
+    '?accessoriesType=Blank&avatarStyle=Circle&clotheColor=PastelGreen&clotheType=ShirtScoopNeck&eyeType=Wink&eyebrowType=UnibrowNatural&facialHairColor=Black&facialHairType=MoustacheMagnum&hairColor=Platinum&mouthType=Concerned&skinColor=Tanned&topType=Turban',
+    '?accessoriesType=Sunglasses&avatarStyle=Circle&clotheColor=Gray02&clotheType=ShirtScoopNeck&eyeType=EyeRoll&eyebrowType=RaisedExcited&facialHairColor=Red&facialHairType=BeardMagestic&hairColor=Red&hatColor=White&mouthType=Twinkle&skinColor=DarkBrown&topType=LongHairBun',
+    '?accessoriesType=Prescription02&avatarStyle=Circle&clotheColor=Black&clotheType=ShirtVNeck&eyeType=Surprised&eyebrowType=Angry&facialHairColor=Blonde&facialHairType=Blank&hairColor=Blonde&hatColor=PastelOrange&mouthType=Smile&skinColor=Black&topType=LongHairNotTooLong',
+    '?accessoriesType=Round&avatarStyle=Circle&clotheColor=PastelOrange&clotheType=Overall&eyeType=Close&eyebrowType=AngryNatural&facialHairColor=Blonde&facialHairType=Blank&graphicType=Pizza&hairColor=Black&hatColor=PastelBlue&mouthType=Serious&skinColor=Light&topType=LongHairBigHair',
+    '?accessoriesType=Kurt&avatarStyle=Circle&clotheColor=Gray01&clotheType=BlazerShirt&eyeType=Surprised&eyebrowType=Default&facialHairColor=Red&facialHairType=Blank&graphicType=Selena&hairColor=Red&hatColor=Blue02&mouthType=Twinkle&skinColor=Pale&topType=LongHairCurly'
+  ]
+
+
   export default {
     data: () => ({
-      open: ['/usr'],
-      files: {
-        html: 'mdi-language-html5',
-        js: 'mdi-nodejs',
-        json: 'mdi-json',
-        md: 'mdi-markdown',
-        pdf: 'mdi-file-pdf',
-        png: 'mdi-file-image',
-        config: 'mdi-file-document-outline',
-        xls: 'mdi-file-excel',
-      },
-      active:[],
-      val: 'blah',
-      tree: [],
-      addedApps: [],
-      items: [
+      active: [],
+      open: [],
+      //users: [],
+      users: [
         {
-          name: '/usr',
+          "id": 1,
+          "name": "Leanne Graham",
           children: [
             {
-              name: 'share',
-              children: [
-                {
-                  name: 'omar',
-                  children:[
-                    {
-                      name: 'omar-systemd.sh',
-                      file: 'config'
-                    },
-                    {
-                      name: '.env',
-                      file: 'config'
-                    }
-                  ]
-                },
-                {
-                  name: 'ossim',
-                  children:[
-                    {
-                      name: 'index.html',
-                      file: 'txt'
-                    }
-                  ]
+              "id":1,
+              "name": 'omar',
+              "username": "Karianne",
+              "email": "Julianne.OConner@kory.org",
+              "address": {
+                "street": "Hoeger Mall",
+                "suite": "Apt. 692",
+                "city": "South Elvis",
+                "zipcode": "53919-4257",
+                "geo": {
+                  "lat": "29.4572",
+                  "lng": "-164.2990"
                 }
-              ]
-            },
+              },
+              "phone": "493-170-9623 x156",
+              "website": "kale.biz",
+              "company": {
+                "name": "Robel-Corkery",
+                "catchPhrase": "Multi-tiered zero tolerance productivity",
+                "bs": "transition cutting-edge web services"
+              }
+            }
           ]
         },
         {
-          name: '/etc',
-          children: [
-            {
-              name: 'systemd',
-              children: [
-                {
-                  name: 'system',
-                  children:[
-                    {
-                      name: 'index.html',
-                      file: 'html'
-                    }
-                  ]
-                }
-              ]
-            },
-          ]
+          "id": 2,
+          "name": "Ervin Howell",
+          "username": "Antonette",
+          "email": "Shanna@melissa.tv",
+          "address": {
+            "street": "Victor Plains",
+            "suite": "Suite 879",
+            "city": "Wisokyburgh",
+            "zipcode": "90566-7771",
+            "geo": {
+              "lat": "-43.9509",
+              "lng": "-34.4618"
+            }
+          },
+          "phone": "010-692-6593 x09125",
+          "website": "anastasia.net",
+          "company": {
+            "name": "Deckow-Crist",
+            "catchPhrase": "Proactive didactic contingency",
+            "bs": "synergize scalable supply-chains"
+          }
+        },
+        {
+          "id": 3,
+          "name": "Clementine Bauch",
+          "username": "Samantha",
+          "email": "Nathan@yesenia.net",
+          "address": {
+            "street": "Douglas Extension",
+            "suite": "Suite 847",
+            "city": "McKenziehaven",
+            "zipcode": "59590-4157",
+            "geo": {
+              "lat": "-68.6102",
+              "lng": "-47.0653"
+            }
+          },
+          "phone": "1-463-123-4447",
+          "website": "ramiro.info",
+          "company": {
+            "name": "Romaguera-Jacobson",
+            "catchPhrase": "Face to face bifurcated interface",
+            "bs": "e-enable strategic applications"
+          }
         }
       ]
     }),
     computed: {
+      items () {
+        return [
+          {
+            name: 'Users',
+            children: this.users
+          }
+        ]
+      },
       selected () {
-      // looks like i need to do something to get the selected. likely change to active node and change selected
-      console.log('selected called')
-        /*if (!this.active.length) return undefined
+        console.log('active BEFORE: ',this.active)
+        if (!this.active.length) {
+          console.log('active in sel: ',this.active)
+          return undefined
+        }
         const id = this.active[0]
-        return this.users.find(user => user.id === id)*/
-        return this .users
+        console.log('id: ',id)
+        var find = this.users.find(user => user.id === id)
+        if(!find){
+          //not in root list so we have to dive deeper
+
+        }
+        return this.users.find(user => user.id === id)
       }
     },
     watch: {
-      selected: 'randomAvatar'
+      // selected: 'randomAvatar'
     },
     methods: {
-    
+      fetchUsers (item) {
+        console.log('in fetch')
+        return this.items
+
+        /*return fetch('https://jsonplaceholder.typicode.com/users')
+          .then(res => res.json())
+          .then(json => (item.children.push(...json)))
+          .catch(err => console.warn(err))*/
+      }
     }
   }
 </script>
