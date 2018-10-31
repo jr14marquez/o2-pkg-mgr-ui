@@ -19,20 +19,18 @@
 
 <script>
 import store from "../store"
-
   export default {
     props: ['clickedNext', 'currentStep'],
     data () {
       return {
         selectedApps: [],
-        apps: [ 'omar-ui', 'omar-services', 'omar-disk-cleanup', 'omar-cmdln (ingest)', 'tlv', 'omar-httpd-proxy (Required for install)' ]
+        apps: this.$store.getters.getApps
       }
     },
     methods: {
       selected: function(val){
         // Save to store 
         store.dispatch('addApp',val)
-        console.log('selected is :', val)
         this.$emit('can-continue', {value: true});
       },
     },

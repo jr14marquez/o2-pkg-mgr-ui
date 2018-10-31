@@ -18,15 +18,18 @@
 </template>
 
 <script>
+import store from "../store"
   export default {
     data () {
       return {
         selectedLibraries: [],
-        libraries: [ 'ossim', 'elevation']
+        libraries: this.$store.getters.getLibraries
       }
     },
     methods: {
-      selected: function(){
+      selected: function(val){
+        // Save to store 
+        store.dispatch('addLibrary',val)
         this.$emit('can-continue', {value: true});
       }
     },

@@ -22,6 +22,7 @@ import store from "../store"
 // This components will have the content for each stepper step.
 import StepOne from './StepOne.vue';
 import StepTwo from './StepTwo.vue';
+import StepThree from './StepThree.vue';
 
 export default {
   components: {
@@ -44,6 +45,14 @@ export default {
           title: 'Libraries',
           subtitle: 'Add libraries and data',
           component: StepTwo,
+          completed: false,
+        },
+        {
+          icon: 'library_add',
+          name: 'third',
+          title: 'Account Info',
+          subtitle: 'Add user and group info',
+          component: StepThree,
           completed: false,
         }
       ],
@@ -71,8 +80,9 @@ export default {
     // Executed when @stepper-finished event is triggered
     alert(payload) {
       var selectedApps = this.$store.getters.getSelectedApps
+      var selectedLibraries = this.$store.getters.getSelectedLibraries
       console.log('apps: ',selectedApps)
-      alert(selectedApps)
+      alert(selectedApps + ' ----' + selectedLibraries)
     }
   },
   mounted() {
