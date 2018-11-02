@@ -2,13 +2,10 @@
   <v-container fluid>
     <v-layout align-center justify-center row fill-height>
       <v-flex xs12 sm8>
-      <v-btn @click="test">test</v-btn>
-
-        <v-treeview
-         
+         <v-treeview
+          v-if="activateTree"
           open-all
-          :load-children="fetchUsers"
-          :items="items"
+          :items="bitems()"
           activatable
           hoverable
           item-key="name"
@@ -25,49 +22,9 @@
           </template>
         </v-treeview>
 
-         <v-scroll-y-transition mode="out-in">
-
-          <div
-            v-if="!selected"
-            class="title grey--text text--lighten-1 font-weight-light"
-            style="align-self: center;"
-          >
-            Select a User
-          </div>
-          <v-card
-            v-else
-            :key="selected.id"
-            class="pt-4 mx-auto"
-            flat
-            max-width="400"
-          >
-           <div>{{ selected }}</div>
-            <v-card-text>
-              <h3 class="headline mb-2">
-                {{ selected.name }}
-              </h3>
-              <div class="blue--text mb-2">{{ selected.email }}</div>
-              <div class="blue--text subheading font-weight-bold">{{ selected.username }}</div>
-            </v-card-text>
-            <v-divider></v-divider>
-            <v-layout
-              tag="v-card-text"
-              text-xs-left
-              wrap
-            >
-              <v-flex tag="strong" xs5 text-xs-right mr-3 mb-2>Company:</v-flex>
-              <v-flex>{{ selected.company.name }}</v-flex>
-              <v-flex tag="strong" xs5 text-xs-right mr-3 mb-2>Website:</v-flex>
-              <v-flex>
-                <a :href="`//${selected.website}`" target="_blank">{{ selected.website }}</a>
-              </v-flex>
-              <v-flex tag="strong" xs5 text-xs-right mr-3 mb-2>Phone:</v-flex>
-              <v-flex>{{ selected.phone }}</v-flex>
-            </v-layout>
-          </v-card>
-        </v-scroll-y-transition>
-
-      </v-flex>
+        <!--<div v-if="!selected">not selected</div>
+        <div v-else :key="selected.name">yep</div>-->
+       </v-flex>
     </v-layout>
   </v-container>
 </template>
@@ -75,9 +32,9 @@
 <script>
 import store from "../store"
 
-  export default {
+   export default {
     data: () => ({
-      open: [],
+      open: ['/usr'],
       files: {
         html: 'mdi-language-html5',
         js: 'mdi-nodejs',
@@ -89,44 +46,12 @@ import store from "../store"
         xls: 'mdi-file-excel',
       },
       active:[],
-      val: 'blah',
-      tree: [],
-      addedApps: [],
-      users: [
-        {
-              "id": 1,
-              "name": "share",
-              children: [
-                {
-                  "id":2,
-                  name: 'omar',
-                  children:[
-                    {
-                      "id":3,
-                      name: 'omar-systemd.sh',
-                      file: 'config'
-                    },
-                    {
-                      "id":4,
-                      name: '.env',
-                      file: 'config'
-                    }
-                  ]
-                },
-                {
-                  "id":5,
-                  name: 'ossim',
-                  children:[
-                    {
-                      "id":6,
-                      name: 'index.html',
-                      file: 'txt'
-                    }
-                  ]
-                }
-              ]
-          
-        },
+      activateTree: false,
+      dirs: [],
+      selectedApps: [],
+      selectedLibraries: [],
+      items:
+       
         {
           name: '/etc',
           children: [
@@ -146,11 +71,27 @@ import store from "../store"
             },
           ]
         }
-      ]
+      
     }),
-    mounted () {
+     created () {
+    console.log('created')
+         this.activateTree = true
+      this.dirs = this.$store.getters.getAccountInfo.home.split('/').filter((obj) => obj)
+      this.selectedApps = this.$store.getters.getSelectedApps
+      this.selectedLibraries = this.$store.getters.getSelectedLibraries
+      this.$emit('can-continue', {value: true}); 
+     },
+     mounted () {
 
-    },
+     console.log('mounted')
+          this.activateTree = true
+      this.dirs = this.$store.getters.getAccountInfo.home.split('/').filter((obj) => obj)
+      this.selectedApps = this.$store.getters.getSelectedApps
+      this.selectedLibraries = this.$store.getters.getSelectedLibraries
+      console.log('this.dirs: ',this.dirs)
+
+      this.$emit('can-continue', {value: true}); 
+     },
     computed: {
       selected () {
         console.log('active BEFORE: ',this.active)
@@ -158,67 +99,117 @@ import store from "../store"
           console.log('active in sel: ',this.active)
           return undefined
         }
-        const id = this.active[0]
-        console.log('id: ',id)
-        return this.users.find(user => user.id === id)
+        const name = this.active[0]
+        console.log('name selected: ',name)
+        var find =  this.items.find(user => user.name === name)
+
+        return undefined
       },
-      items () {
+      citems() {
+      console.log('called citems')
+       /* var dirs = this.$store.getters.getAccountInfo.home.split('/').filter((obj) => obj)
+        var selectedApps = this.$store.getters.getSelectedApps
+        var selectedLibraries = this.$store.getters.getSelectedLibraries*/
+        
+       var res =  this.dirs.map(dir => {
+          return { name: dir, children: [] }
+        }).reverse().reduce((a,b,i) => {
+          b.children.push(a)
+          return b
+        })
+
+
+    /* console.log('childres test: ', dirObj.children[0].children[0])
+      selectedApps.map(app => {
+        // If its not already added then add it to tree
+        if(!this.addedApps.includes(app)) {
+          dirObj.children[0].children[0].children.push(
+            {
+              name: app,
+              children:[
+                {
+                  name: `${app}-prod.yml`,
+                  file: 'config'
+                },
+                {
+                  name: `${app}-dev.yml`,
+                  file: 'config'
+                }
+              ]
+            }
+          )
+          this.addedApps.push(app)
+        }
+      }) */
+
         return [
-          {
-            name: '/usr',
-            children: this.users
-          }
+          res,
+          this.items
         ]
-      },
+      }
     },
     methods: {
-      test(value) {
-        console.log('active: ',this.$el.querySelector('.v-treeview-node--active'))
-        this.$el.querySelector('.v-treeview-node--active')
-        // get this element  next <label class="v-treeview-node__label">omar-systemd.sh</label>
-        // add click to all of these v-treeview-node__content
-        console.log('content: ',this.$el.querySelectorAll('label'))
-      },
-      fetchUsers(item) {
+      bitems() {
+      console.log('called bitems')
+        var dirs = this.$store.getters.getAccountInfo.home.split('/').filter((obj) => obj)
         var selectedApps = this.$store.getters.getSelectedApps
         var selectedLibraries = this.$store.getters.getSelectedLibraries
-        var accountInfo = this.$store.getters.getAccountInfo  
-        var arr = []
 
-        selectedApps.map(app => {
-          // If its not already added then add it to tree
-          if(!this.addedApps.includes(app)) {
-            arr.push(
-              {
-                name: app,
-                children:[
-                  {
-                    name: `${app}-prod.yml`,
-                    file: 'config'
-                  },
-                  {
-                    name: `${app}-dev.yml`,
-                    file: 'config'
-                  }
-                ]
-              }
-            )
-            this.addedApps.push(app)
-          }
+        console.log('dirs in bitems: ',dirs)
+       var res =  dirs.map(dir => {
+          return { name: dir, children: [] }
+        }).reverse().reduce((a,b,i) => {
+          b.children.push(a)
+          return b
         })
-        this.items[0].children[0].children[0].children.push(arr)
-        return this.items
+
+
+    /* console.log('childres test: ', dirObj.children[0].children[0])
+      selectedApps.map(app => {
+        // If its not already added then add it to tree
+        if(!this.addedApps.includes(app)) {
+          dirObj.children[0].children[0].children.push(
+            {
+              name: app,
+              children:[
+                {
+                  name: `${app}-prod.yml`,
+                  file: 'config'
+                },
+                {
+                  name: `${app}-dev.yml`,
+                  file: 'config'
+                }
+              ]
+            }
+          )
+          this.addedApps.push(app)
+        }
+      }) */
+
+        return [
+          res,
+          this.items
+        ]
       }
     },
     activated() {
-
-      this.$emit('can-continue', {value: true}); 
+      console.log('ACTCIVATE')
+      console.log('mounted')
+      console.log('this.dirs: ',this.dirs)
+          this.activateTree = true
+      /*this.dirs = this.$store.getters.getAccountInfo.home.split('/').filter((obj) => obj)
+      this.selectedApps = this.$store.getters.getSelectedApps
+      this.selectedLibraries = this.$store.getters.getSelectedLibraries
+      this.$emit('can-continue', {value: true}); */
       
+    },
+    deactivated() {
+      console.log('deactivated')
+      this.activateTree = false
     }
   }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+ <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
-</style>
+ </style>

@@ -50,11 +50,16 @@ import store from "../store"
   export default {
     data () {
       return {
-        accountInfo: this.$store.getters.getAccountInfo,
+        //accountInfo: this.$store.getters.getAccountInfo,
       }
     },
     mounted () {
       this.$validator.localize('en', this.dictionary)
+    },
+    computed: {
+      accountInfo() {
+        return this.$store.getters.getAccountInfo
+      }
     },
     methods: {
       selected: function(val){
