@@ -26,7 +26,6 @@ import StepOne from './StepOne.vue'
 import StepTwo from './StepTwo.vue'
 import StepThree from './StepThree.vue'
 import StepFour from './StepFour.vue'
-import StepFive from './StepFive.vue'
 
 export default {
   components: {
@@ -65,14 +64,6 @@ export default {
           title: 'Review',
           subtitle: 'Review installation',
           component: StepFour,
-          completed: false,
-        },
-        {
-          icon: 'description',
-          name: 'fourth',
-          title: 'Review',
-          subtitle: 'Review installation',
-          component: StepFive,
           completed: false,
         }
       ],

@@ -27,6 +27,7 @@
           <v-text-field
             v-validate="'required|min:3'"
             v-model="accountInfo.home"
+            @keyup="inputChanged"
             clearable
             :error-messages="errors.collect('home')"
             label="Home/Install Directory"
@@ -50,33 +51,26 @@ import store from "../store"
   export default {
     data () {
       return {
-        //accountInfo: this.$store.getters.getAccountInfo,
+        accountInfo: this.$store.getters.getAccountInfo,
       }
     },
     mounted () {
       this.$validator.localize('en', this.dictionary)
     },
-    computed: {
-      accountInfo() {
-        return this.$store.getters.getAccountInfo
-      }
-    },
     methods: {
-      selected: function(val){
-        // Save to store 
-        // store.dispatch('addLibrary',val)
-        this.$emit('can-continue', {value: true});
-      },
       submit () {
         this.$validator.validateAll().then(result => {
           // Save to store if result is true
           console.log('result from submit: ', result)
           if(result) {
+            this.$emit('can-continue', {value: true}); 
             store.dispatch('addAccountInfo',this.accountInfo)
           }
         })
         .catch(err => console.error('an error occurred validating: ',err))
-
+      },
+      inputChanged () {
+        this.$emit('can-continue', {value: false});
       },
       clear () {
         this.accountInfo = {
@@ -87,8 +81,8 @@ import store from "../store"
         this.$validator.reset()
       }
     },
-    activated() {
-      this.$emit('can-continue', {value: true});   
+    activated() {  
+      this.$emit('can-continue', {value: false});
     }
   }
 </script>

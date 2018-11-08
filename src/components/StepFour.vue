@@ -1,29 +1,66 @@
 <template>
   <v-container fluid>
     <v-layout align-center justify-center row fill-height>
-      <v-flex xs12 sm8>
-         <v-treeview
-          v-if="activateTree"
-          open-all
-          :items="bitems()"
-          activatable
-          hoverable
-          item-key="name"
-          :active.sync="active"
-          open-on-click
-        >
-          <template slot="prepend" slot-scope="{ item, open, leaf, active }">
-            <v-icon v-if="!item.file">
-              {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
-            </v-icon>
-            <v-icon v-else>
-              {{ files[item.file] }}
-            </v-icon>
-          </template>
-        </v-treeview>
+      <v-flex xs11>
 
-        <!--<div v-if="!selected">not selected</div>
-        <div v-else :key="selected.name">yep</div>-->
+<v-btn @click="openTree">Open</v-btn>
+        <v-card>
+          <v-card-title class="blue darken-1 white--text headline">
+            Linux File System Directories
+          </v-card-title>
+          <v-layout justify-space-between pa-3>
+
+            <v-treeview
+            v-if="activateTree"
+            :open="open"
+            :items="zitems"
+            activatable
+            hoverable
+            item-key="name"
+            :active.sync="active"
+            open-on-click
+             >
+              <template slot="prepend" slot-scope="{ item, open, leaf, active }">
+                <v-icon v-if="!item.file">
+                  {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
+                </v-icon>
+                <v-icon v-else>
+                  {{ files[item.file] }}
+                </v-icon>
+              </template>
+            </v-treeview>
+
+
+            <v-flex d-flex text-xs-center>
+              <v-scroll-y-transition mode="out-in">
+                <div
+                  v-if="!selected"
+                  class="title grey--text text--lighten-1 font-weight-light"
+                  style="align-self: center;"
+                >
+                  Select a File to see a description.
+                </div>
+
+                <v-card v-else class="pt-4 mx-auto" flat max-width="400">
+                  <v-card-text>
+                    <h3 class="headline mb-2">
+                      {{ selected}}
+                    </h3>
+                    <div class="blue--text mb-2">{{ selected.email }}</div>
+                    <div class="blue--text subheading font-weight-bold">{{ selected }}</div>
+                  </v-card-text>
+                  <v-divider></v-divider>
+                  <v-layout tag="v-card-text" text-xs-left wrap>
+                    <v-flex tag="strong" xs5 text-xs-right mr-3 mb-2>Website:</v-flex>
+                    <v-flex>
+                      <a :href="`//${selected}`" target="_blank">{{ selected }}</a>
+                    </v-flex>
+                  </v-layout>
+                </v-card>
+              </v-scroll-y-transition>
+            </v-flex>
+          </v-layout>
+        </v-card>
        </v-flex>
     </v-layout>
   </v-container>
@@ -34,7 +71,7 @@ import store from "../store"
 
    export default {
     data: () => ({
-      open: ['/usr'],
+      open:[],
       files: {
         html: 'mdi-language-html5',
         js: 'mdi-nodejs',
@@ -46,166 +83,155 @@ import store from "../store"
         xls: 'mdi-file-excel',
       },
       active:[],
+      zitems: [],
       activateTree: false,
       dirs: [],
       selectedApps: [],
+      addedApps: [],
+      addedSystemdUnits: [],
+      addedDefaults: false,
       selectedLibraries: [],
-      items:
-       
-        {
-          name: '/etc',
-          children: [
-            {
-              name: 'systemd',
-              children: [
-                {
-                  name: 'system',
-                  children:[
-                    {
-                      name: 'index.html',
-                      file: 'html'
-                    }
-                  ]
-                }
-              ]
-            },
-          ]
-        }
-      
+      initTree: {
+        name: 'etc',
+        children: [
+          {
+            name: 'systemd',
+            children: [
+              {
+                name: 'system',
+                children:[]
+              }
+            ]
+          },
+        ]
+      }
     }),
-     created () {
-    console.log('created')
-         this.activateTree = true
-      this.dirs = this.$store.getters.getAccountInfo.home.split('/').filter((obj) => obj)
-      this.selectedApps = this.$store.getters.getSelectedApps
-      this.selectedLibraries = this.$store.getters.getSelectedLibraries
+    created () {
+      console.log('created')
+      this.activateTree = true
+      this.open = ['etc']
       this.$emit('can-continue', {value: true}); 
      },
      mounted () {
-
-     console.log('mounted')
-          this.activateTree = true
-      this.dirs = this.$store.getters.getAccountInfo.home.split('/').filter((obj) => obj)
-      this.selectedApps = this.$store.getters.getSelectedApps
-      this.selectedLibraries = this.$store.getters.getSelectedLibraries
-      console.log('this.dirs: ',this.dirs)
-
+      console.log('mounted')
+      this.open = ['etc']
+      this.activateTree = true
       this.$emit('can-continue', {value: true}); 
      },
     computed: {
       selected () {
-        console.log('active BEFORE: ',this.active)
+        console.log('active BEFORE in selected computed: ',this.active)
         if (!this.active.length) {
           console.log('active in sel: ',this.active)
           return undefined
         }
         const name = this.active[0]
         console.log('name selected: ',name)
-        var find =  this.items.find(user => user.name === name)
+        //var find =  this.initItems.find(user => user.name === name)
+        var fileDescription = this.$store.getters.getFileInfo(name)
+        console.log('file description',fileDescription)
+        return fileDescription
 
-        return undefined
       },
-      citems() {
-      console.log('called citems')
-       /* var dirs = this.$store.getters.getAccountInfo.home.split('/').filter((obj) => obj)
-        var selectedApps = this.$store.getters.getSelectedApps
-        var selectedLibraries = this.$store.getters.getSelectedLibraries*/
-        
-       var res =  this.dirs.map(dir => {
-          return { name: dir, children: [] }
-        }).reverse().reduce((a,b,i) => {
-          b.children.push(a)
-          return b
-        })
-
-
-    /* console.log('childres test: ', dirObj.children[0].children[0])
-      selectedApps.map(app => {
-        // If its not already added then add it to tree
-        if(!this.addedApps.includes(app)) {
-          dirObj.children[0].children[0].children.push(
-            {
-              name: app,
-              children:[
-                {
-                  name: `${app}-prod.yml`,
-                  file: 'config'
-                },
-                {
-                  name: `${app}-dev.yml`,
-                  file: 'config'
-                }
-              ]
-            }
-          )
-          this.addedApps.push(app)
-        }
-      }) */
-
-        return [
-          res,
-          this.items
-        ]
-      }
     },
     methods: {
-      bitems() {
-      console.log('called bitems')
+      items() {
         var dirs = this.$store.getters.getAccountInfo.home.split('/').filter((obj) => obj)
         var selectedApps = this.$store.getters.getSelectedApps
         var selectedLibraries = this.$store.getters.getSelectedLibraries
 
-        console.log('dirs in bitems: ',dirs)
-       var res =  dirs.map(dir => {
-          return { name: dir, children: [] }
-        }).reverse().reduce((a,b,i) => {
-          b.children.push(a)
-          return b
+        Promise.all(dirs.map((dir,i) => {
+          var obj = { name: dir, children: [] }
+          if(i != dirs.length -1) {
+            return Promise.resolve(obj)
+          } 
+          // At the end of the file tree so we put our app stuff in here
+          return this.addApps(selectedApps, { name: dir, children: [] })
+            .then(results => {
+              return results[0]
+            })
+  
+        })).then(x => {
+          var appTree = x.reverse().reduce((a,b,i) => {
+            b.children.push(a)
+            return b
+          })
+          this.zitems = [appTree, this.initTree]
+          this.open = ['etc','systemd','system']
+
         })
+ 
+      },
+      addApps(apps,directory) {
 
-
-    /* console.log('childres test: ', dirObj.children[0].children[0])
-      selectedApps.map(app => {
-        // If its not already added then add it to tree
-        if(!this.addedApps.includes(app)) {
-          dirObj.children[0].children[0].children.push(
+       return Promise.all(apps.map((app) => { 
+          var appName = app.replace('-app','')
+          this.addSystemdUnit(appName)
+          if(app != 'omar-disk-cleanup') {
+            directory.children.push(
             {
-              name: app,
+              name: appName,
               children:[
                 {
-                  name: `${app}-prod.yml`,
+                  name: `${appName}-prod.yml`,
                   file: 'config'
                 },
                 {
-                  name: `${app}-dev.yml`,
+                  name: `${appName}-dev.yml`,
+                  file: 'config'
+                },
+                {
+                  name: `${appName}-app-<version>.jar`,
                   file: 'config'
                 }
               ]
-            }
-          )
-          this.addedApps.push(app)
-        }
-      }) */
+            })
+          } else {
+            directory.children.push(
+            {
+              name: appName,
+              children:[
+                {
+                  name: `${appName}-app-<version>.jar`,
+                  file: 'config'
+                }
+              ]
+            })
+          }
+          if(!this.addedDefaults){
+            directory.children.push(
+            { name: 'omar-systemd.sh', file: 'config'},
+            { name: '.env', file: 'config'})
+            this.addedDefaults = true
+          }
 
-        return [
-          res,
-          this.items
-        ]
+          return Promise.resolve(directory)
+        }))
+      },
+      addSystemdUnit(appName){
+        var unitFile = { name: `${appName}.service`, file: 'config'}
+        var timer = { name: `${appName}.timer`, file: 'config'}
+        if(!this.addedSystemdUnits.includes(appName)) {
+          this.initTree.children[0].children[0].children.push(unitFile)
+          if(appName == 'omar-disk-cleanup' || 'omar-cmdln') {
+            this.initTree.children[0].children[0].children.push(timer)
+          }
+        }
+        this.addedSystemdUnits.push(appName)
+      },
+      openTree() {
+        console.log('open clicked')
+        this.open = ['etc']
       }
     },
     activated() {
-      console.log('ACTCIVATE')
-      console.log('mounted')
-      console.log('this.dirs: ',this.dirs)
-          this.activateTree = true
-      /*this.dirs = this.$store.getters.getAccountInfo.home.split('/').filter((obj) => obj)
-      this.selectedApps = this.$store.getters.getSelectedApps
-      this.selectedLibraries = this.$store.getters.getSelectedLibraries
-      this.$emit('can-continue', {value: true}); */
-      
+      this.activateTree = true
+      this.openStatus = true
+      this.open = ['etc']
+      this.items()
+
     },
     deactivated() {
-      console.log('deactivated')
       this.activateTree = false
     }
   }
