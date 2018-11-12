@@ -3,7 +3,6 @@
     <v-layout align-center justify-center row fill-height>
       <v-flex xs11>
 
-<v-btn @click="openTree">Open</v-btn>
         <v-card>
           <v-card-title class="blue darken-1 white--text headline">
             Linux File System Directories
@@ -117,12 +116,13 @@ import store from "../store"
       this.open = ['etc']
       this.activateTree = true
       this.$emit('can-continue', {value: true}); 
+      console.log('Z items in mounted: ',this.zitems)
      },
     computed: {
       selected () {
-        console.log('active BEFORE in selected computed: ',this.active)
+        console.log('in selected')
         if (!this.active.length) {
-          console.log('active in sel: ',this.active)
+          console.log('active if in sel: ',this.active)
           return undefined
         }
         const name = this.active[0]
@@ -156,8 +156,10 @@ import store from "../store"
             b.children.push(a)
             return b
           })
+          console.log('dirs: ',dirs)
           this.zitems = [appTree, this.initTree]
-          this.open = ['etc','systemd','system']
+          //this.open = ['etc','systemd','system']
+          this.open = dirs
 
         })
  
@@ -218,10 +220,6 @@ import store from "../store"
           }
         }
         this.addedSystemdUnits.push(appName)
-      },
-      openTree() {
-        console.log('open clicked')
-        this.open = ['etc']
       }
     },
     activated() {
@@ -229,7 +227,6 @@ import store from "../store"
       this.openStatus = true
       this.open = ['etc']
       this.items()
-
     },
     deactivated() {
       this.activateTree = false

@@ -2,12 +2,10 @@ import axios from 'axios'
 
 export default() => {
   return axios.create({
-    baseURL: `https://nexus.ossim.io/nexus/content/repositories/omar-local-snapshot`,
+    baseURL: `https://jj4xjl5211.execute-api.us-east-1.amazonaws.com/dev/getApp`,
     withCredentials: false,
     headers: {
-      'Accept': 'application/json',
       'Content-Type': 'application/json',
-      "Access-Control-Allow-Origin":  "*"
-     }
+    }
   })
 }
