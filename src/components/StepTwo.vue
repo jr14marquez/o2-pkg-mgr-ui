@@ -4,6 +4,8 @@
       <v-flex xs12 sm8>
         <v-select
           :items="libraries"
+          item-text="name"
+          return-object
           @change="selected"
           v-model="selectedLibraries"
           label="Libraries and Data"
@@ -23,7 +25,7 @@ import store from "../store"
     data () {
       return {
         selectedLibraries: [],
-        libraries: this.$store.getters.getLibraries
+        libraries: this.$store.getters.getLibraries,
       }
     },
     methods: {

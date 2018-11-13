@@ -41,11 +41,11 @@
               class="elevation-1"
             >
               <template slot="items" slot-scope="props">
-                <td class="text-xs-left">{{ props.item.data.name }}</td>
-                <td class="text-xs-left">{{ props.item.data.version }}</td>
-                <td class="text-xs-left">{{ props.item.data.timestamp }}</td>
-                <td class="text-xs-left">{{ props.item.data.buildNumber }}</td>
-                <td class="text-xs-left"><v-icon @click="download(props.item.data.url)">mdi-download</v-icon></td>
+                  <td class="text-xs-left">{{ props.item.data.name }}</td>
+                  <td class="text-xs-left">{{ props.item.data.version }}</td>
+                  <td class="text-xs-left">{{ props.item.data.timestamp }}</td>
+                  <td class="text-xs-left">{{ props.item.data.buildNumber }}</td>
+                  <td class="text-xs-left"><v-icon @click="download(props.item.data.url)">mdi-download</v-icon></td>
               </template>
               <template slot="no-data">
                 <v-alert :value="true" color="error" icon="warning">
@@ -85,7 +85,7 @@ export default {
       dialog: false,
       headers: [
         {
-          text: 'App',
+          text: 'App/Data',
           align: 'left',
           sortable: false,
           value: 'name'
@@ -160,7 +160,7 @@ export default {
       var selectedLibraries = this.$store.getters.getSelectedLibraries
       var accountInfo = this.$store.getters.getAccountInfo
       console.log(selectedApps + ' ----' + selectedLibraries + '----------' + accountInfo)
-
+ 
       var promises = [] 
       selectedApps.map((app,i) => {
         var obj = { name: app.replace('-app',''), user: accountInfo.user, group: accountInfo.group, home: accountInfo.home }
@@ -168,8 +168,11 @@ export default {
       })
 
       axios.all(promises).then(rpms => {
-        console.log('rpms: ',rpms)
         this.apps = rpms
+        selectedLibraries.map(lib => {
+          this.apps.push({ data: { name: lib.name, url: lib.url }})
+        })
+        this.dialog = true
       })
       
     }

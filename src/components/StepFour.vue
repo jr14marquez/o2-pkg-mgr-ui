@@ -34,26 +34,27 @@
               <v-scroll-y-transition mode="out-in">
                 <div
                   v-if="!selected"
-                  class="title grey--text text--lighten-1 font-weight-light"
+                  class="title grey--text text--lighten-1"
                   style="align-self: center;"
                 >
                   Select a File to see a description.
                 </div>
 
-                <v-card v-else class="pt-4 mx-auto" flat max-width="400">
+                <v-card v-else class="mx-auto" flat max-width="475">
                   <v-card-text>
-                    <h3 class="headline mb-2">
-                      {{ selected}}
-                    </h3>
-                    <div class="blue--text mb-2">{{ selected.email }}</div>
-                    <div class="blue--text subheading font-weight-bold">{{ selected }}</div>
+                    <!--<v-flex tag="strong" xs5 text-xs-left mr-3 mb-2>Website:</v-flex>-->
+                    <v-flex d-flex text-xs-left tag="strong" xs12 mr-1 mb-2>
+                      Website:&nbsp;<a :href="`${selected.url}`" target="_blank">{{ selected.url }}</a>
+                    </v-flex>
+                    
                   </v-card-text>
                   <v-divider></v-divider>
                   <v-layout tag="v-card-text" text-xs-left wrap>
-                    <v-flex tag="strong" xs5 text-xs-right mr-3 mb-2>Website:</v-flex>
-                    <v-flex>
-                      <a :href="`//${selected}`" target="_blank">{{ selected }}</a>
-                    </v-flex>
+                    <div class="mb-1">{{ selected.description }}</div>
+                  </v-layout>
+                   <v-divider></v-divider>
+                  <v-layout tag="v-card-text" text-xs-left wrap>
+                    <div class="mb-1">{{ selected.commands }}</div>
                   </v-layout>
                 </v-card>
               </v-scroll-y-transition>
@@ -120,7 +121,7 @@ import store from "../store"
      },
     computed: {
       selected () {
-        console.log('in selected')
+        console.log('in selected with active',this.active[0])
         if (!this.active.length) {
           console.log('active if in sel: ',this.active)
           return undefined
@@ -169,37 +170,24 @@ import store from "../store"
        return Promise.all(apps.map((app) => { 
           var appName = app.replace('-app','')
           this.addSystemdUnit(appName)
-          if(app != 'omar-disk-cleanup') {
-            directory.children.push(
-            {
-              name: appName,
-              children:[
-                {
-                  name: `${appName}-prod.yml`,
-                  file: 'config'
-                },
-                {
-                  name: `${appName}-dev.yml`,
-                  file: 'config'
-                },
-                {
-                  name: `${appName}-app-<version>.jar`,
-                  file: 'config'
-                }
-              ]
-            })
-          } else {
-            directory.children.push(
-            {
-              name: appName,
-              children:[
-                {
-                  name: `${appName}-app-<version>.jar`,
-                  file: 'config'
-                }
-              ]
-            })
-          }
+          directory.children.push(
+          {
+            name: appName,
+            children:[
+              {
+                name: `${appName}-prod.yml`,
+                file: 'config'
+              },
+              {
+                name: `${appName}-dev.yml`,
+                file: 'config'
+              },
+              {
+                name: `${appName}-app-<version>.jar`,
+                file: 'config'
+              }
+            ]
+          })
           if(!this.addedDefaults){
             directory.children.push(
             { name: 'omar-systemd.sh', file: 'config'},
@@ -215,7 +203,7 @@ import store from "../store"
         var timer = { name: `${appName}.timer`, file: 'config'}
         if(!this.addedSystemdUnits.includes(appName)) {
           this.initTree.children[0].children[0].children.push(unitFile)
-          if(appName == 'omar-disk-cleanup' || 'omar-cmdln') {
+          if(appName == ('omar-disk-cleanup' || 'omar-cmdln')) {
             this.initTree.children[0].children[0].children.push(timer)
           }
         }
