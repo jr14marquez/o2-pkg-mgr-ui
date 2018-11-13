@@ -1,66 +1,70 @@
 <template>
 <div>
-  <v-toolbar dark color="primary">
+  <v-toolbar fixed dark color="primary">
     <v-toolbar-title>O2-PKG-MGR</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items class="hidden-sm-and-down">
-      <v-btn @click="dialog = !dialog" flat>Results</v-btn>
+      <v-btn v-if="showDownloads" @click="dialog = !dialog" flat>Downloads</v-btn>
     </v-toolbar-items>
   </v-toolbar>
 
-  <v-container>
+  <v-progress-circular v-if="showProgress"
+    indeterminate
+    color="primary"
+    :size="70"
+    :width="7"
+  ></v-progress-circular>
 
-        <section class="section">
-          <div class="container">
-              <div class="columns">
-                  <div class="column is-8 is-offset-2">
-                      <horizontal-stepper
-                        :steps="demoSteps" @completed-step="completeStep"
-                        @active-step="isStepActive" @stepper-finished="alert"
-                        :top-buttons="true"
-                      >                   
-                      </horizontal-stepper>
-                  </div>
-              </div>
-          </div>
-        </section>
+  <v-container class="stepper-container">
+
+  <section class="section">
+    <div class="container">
+      <div class="columns">
+        <div class="column is-8 is-offset-2">
+          <horizontal-stepper
+          :steps="demoSteps" @completed-step="completeStep"
+          @active-step="isStepActive" @stepper-finished="alert"
+          :top-buttons="true"
+          ></horizontal-stepper>
+        </div>
+      </div>
+    </div>
+  </section>
   </v-container>
 
   <v-dialog v-model="dialog" max-width="700px">
-        <v-card>
+    <v-card>
+      <v-card-title class="headline primary justify-center" primary-title>
+        O2 APP RPMS and DATA
+      </v-card-title>
 
-          <v-card-title class="headline primary justify-center" primary-title>
-            O2 APP RPMS and DATA
-          </v-card-title>
-
-          <v-card-text>
-            <v-data-table
-              :headers="headers"
-              :items="apps"
-              hide-actions
-              class="elevation-1"
-            >
-              <template slot="items" slot-scope="props">
-                  <td class="text-xs-left">{{ props.item.data.name }}</td>
-                  <td class="text-xs-left">{{ props.item.data.version }}</td>
-                  <td class="text-xs-left">{{ props.item.data.timestamp }}</td>
-                  <td class="text-xs-left">{{ props.item.data.buildNumber }}</td>
-                  <td class="text-xs-left"><v-icon @click="download(props.item.data.url)">mdi-download</v-icon></td>
-              </template>
-              <template slot="no-data">
-                <v-alert :value="true" color="error" icon="warning">
-                  Sorry, You haven't built any apps yet. :(
-                </v-alert>
-              </template>
-            </v-data-table>
+      <v-card-text>
+        <v-data-table
+        :headers="headers"
+        :items="apps"
+        hide-actions
+        class="elevation-1"
+        >
+          <template slot="items" slot-scope="props">
+            <td class="text-xs-left">{{ props.item.data.name }}</td>
+            <td class="text-xs-left">{{ props.item.data.version }}</td>
+            <td class="text-xs-left">{{ props.item.data.timestamp }}</td>
+            <td class="text-xs-left">{{ props.item.data.buildNumber }}</td>
+            <td class="text-xs-left"><v-icon @click="download(props.item.data.url)">mdi-download</v-icon></td>
+          </template>
+          <template slot="no-data">
+            <v-alert :value="true" color="error" icon="warning">
+              Sorry, You haven't built any apps yet. :(
+            </v-alert>
+          </template>
+        </v-data-table>
        
-          </v-card-text>
-          <v-card-actions>
-            <v-btn color="primary" flat @click="dialog=false">Close</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-
+      </v-card-text>
+      <v-card-actions>
+        <v-btn color="primary" flat @click="dialog=false">Close</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </div>
 </template>
 
@@ -83,6 +87,8 @@ export default {
   data(){
     return {
       dialog: false,
+      showDownloads: false,
+      showProgress: false,
       headers: [
         {
           text: 'App/Data',
@@ -156,10 +162,10 @@ export default {
     },
     // Executed when @stepper-finished event is triggered
     alert(payload) {
+      this.showProgress = true
       var selectedApps = this.$store.getters.getSelectedApps
       var selectedLibraries = this.$store.getters.getSelectedLibraries
       var accountInfo = this.$store.getters.getAccountInfo
-      console.log(selectedApps + ' ----' + selectedLibraries + '----------' + accountInfo)
  
       var promises = [] 
       selectedApps.map((app,i) => {
@@ -172,7 +178,10 @@ export default {
         selectedLibraries.map(lib => {
           this.apps.push({ data: { name: lib.name, url: lib.url }})
         })
+        this.showProgress = false
         this.dialog = true
+        this.showDownloads = true
+
       })
       
     }
@@ -181,5 +190,14 @@ export default {
 </script>
 
 <style>
+.v-progress-circular {
+  position: absolute;
+  top:45%;
+  right: 50%;
+  z-index: 999;
+}
 
+.stepper-container {
+  padding-top: 4%;
+}
 </style>

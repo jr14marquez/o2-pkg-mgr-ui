@@ -8,8 +8,9 @@
             Linux File System Directories
           </v-card-title>
           <v-layout justify-space-between pa-3>
-
-            <v-treeview
+            
+            <v-flex xs4>
+            <v-treeview 
             v-if="activateTree"
             :open="open"
             :items="zitems"
@@ -28,6 +29,7 @@
                 </v-icon>
               </template>
             </v-treeview>
+            </v-flex>
 
 
             <v-flex d-flex text-xs-center>
@@ -40,7 +42,7 @@
                   Select a File to see a description.
                 </div>
 
-                <v-card v-else class="mx-auto" flat max-width="475">
+                <v-card v-else class="mx-auto" flat max-width="700">
                   <v-card-text>
                     <!--<v-flex tag="strong" xs5 text-xs-left mr-3 mb-2>Website:</v-flex>-->
                     <v-flex d-flex text-xs-left tag="strong" xs12 mr-1 mb-2>
